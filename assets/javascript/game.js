@@ -1,38 +1,36 @@
-// https://www.safaribooksonline.com/library/view/html5-canvas/9781449308032/ch01s09.html
-//http://coderdojosv.github.io/javascript-browser-game/
-var guessCount, randomLetter, maxGuesses, guessesLeft, wins, losses, roundOver, roundCount, keyPress;
+var randomLetter, maxGuesses, guessesLeft, wins, losses, roundOver, roundCount, keyPress;
+
+maxGuesses = 3;
 
 resetVariables();
 setVariables();
 
-function resetVariables(){
-	randomLetter = String.fromCharCode(97 + Math.floor(Math.random() * 26));
+function resetVariables(){	
 	wins = 0;
 	losses = 0;
-	roundCount = 0;	
+	roundCount = 0;
 	document.getElementById("wins").innerHTML = "Wins: " + wins;
 	document.getElementById("losses").innerHTML = "Losses: " + losses;
 	document.getElementById("maxGuesses").innerHTML = "Max Guesses: " + maxGuesses;
-	document.getElementById("message").innerHTML = "";
+	document.getElementById("guessesSoFar").innerHTML += " " + keyPress;		
 }
 
 function setVariables(){
-	guessCount = 0;
-	keyPress = "";	
-	maxGuesses = 3;
+	randomLetter = String.fromCharCode(97 + Math.floor(Math.random() * 26));
+	keyPress = "";
 	guessesLeft = 3;
 	roundOver = false;
 	document.getElementById("randomLetter").innerHTML = "The random letter is " + randomLetter;
 	document.getElementById("guessesSoFar").innerHTML = "Your guesses so far:";
-	document.getElementById("guessesLeft").innerHTML = "Guesses Left:";
-	document.getElementById("guessCount").innerHTML = "Guess Count:";
-	document.getElementById("roundCount").innerHTML = "Round Count:";
+	document.getElementById("guessesLeft").innerHTML = "Guesses Left: " + guessesLeft;	
 }	
 
 document.onkeyup=function(event){
-	if(!roundOver && roundCount <= 5){
+	document.getElementById("message").innerHTML = "reset.";
+	console.log("Round: " + roundCount);
+	if(!roundOver && roundCount < 6){
     keyPress = event.key;
-    document.getElementById("guessesSoFar").innerHTML += " " + keyPress;
+    console.log(keyPress);
     checkGuess(keyPress);
      }
      else{
@@ -44,33 +42,29 @@ document.onkeyup=function(event){
 }
 
 function checkGuess(keyPress){	
-	if(randomLetter === keyPress){
-		document.getElementById("message").innerHTML = "You won this round. Press another key to continue.";
-		wins += 1;
+	if(guessesLeft > 0){
+		if(randomLetter === keyPress){			
+			wins++;
+			document.getElementById("wins").innerHTML = "Wins: " + wins;
+			document.getElementById("message").innerHTML = "You won this round. Press another key to continue.";
+			roundOver = true;
+			roundCount++;
+			document.getElementById("roundCount").innerHTML = "Round Count: " + roundCount;
+			setVariables();
+		}
+	}
+	else if(guessesLeft == 0){
+		losses++;
+		document.getElementById("losses").innerHTML = "Losses: " + losses;
+		document.getElementById("message").innerHTML = "You lost this round. Press another key to continue.";
+		roundCount++;
+		document.getElementById("roundCount").innerHTML = "Round Count: " + roundCount;
 		roundOver = true;
-		roundCount += 1;
 		setVariables();
-	}
-	else{
-		//do nothing here
-	}
-	guessCount += 1;
-	guessesLeft -= 1;
-
-	if(guessCount > maxGuesses){
-	document.getElementById("message").innerHTML = "You lost this round. Press another key to continue.";
-	roundOver = true;
-	losses += 1;
-	roundCount += 1;
-	setVariables();
-	}
-	
-	document.getElementById("wins").innerHTML = "Wins: " + wins;
-	document.getElementById("losses").innerHTML = "Losses: " + losses;
-	document.getElementById("guessesLeft").innerHTML = "Guesses Left: " + guessesLeft;
-	document.getElementById("maxGuesses").innerHTML = "Max Guesses: " + maxGuesses;
-	document.getElementById("guessCount").innerHTML = "Guess Count: " + guessCount;	
-	document.getElementById("roundCount").innerHTML = "Round Count: " + roundCount;
+	}	
+	document.getElementById("guessesSoFar").innerHTML += " " + keyPress;
+	guessesLeft--;
+    document.getElementById("guessesLeft").innerHTML = "Guesses Left: " + guessesLeft;
 }
 
 
