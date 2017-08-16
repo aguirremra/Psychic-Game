@@ -1,72 +1,87 @@
-var randomLetter, maxGuesses, guessesLeft, wins, losses, roundOver, roundCount, keyPress;
+var charCode, keyPress, wins, losses, guessesSoFar, guessesLeft, message, winsCount, lossesCount, guessesCount, letter, arr;
 
-maxGuesses = 3;
+arr = "";
+
+//get elements
+wins = document.getElementById("wins");
+losses = document.getElementById("losses");
+guessesSoFar = document.getElementById("guessesSoFar");
+randomLetter = document.getElementById("randomLetter");
+guessesLeft = document.getElementById("guessesLeft");
+message = document.getElementById("message");
+
 
 resetVariables();
 setVariables();
 
+function setVariables(){
+	letter = String.fromCharCode(97 + Math.floor(Math.random() * 26));	
+	keyCode = "";
+	keyPress = "";
+	guessesCount = 10;
+	getGuessesSoFar();
+	arr = [];
+
+}
 function resetVariables(){	
-	wins = 0;
-	losses = 0;
-	roundCount = 0;
-	document.getElementById("wins").innerHTML = "Wins: " + wins;
-	document.getElementById("losses").innerHTML = "Losses: " + losses;
-	document.getElementById("maxGuesses").innerHTML = "Max Guesses: " + maxGuesses;
-	document.getElementById("guessesSoFar").innerHTML += " " + keyPress;		
+	winsCount = 0;
+	lossesCount = 0;
+	getWinsCount();
+	getLossesCount();
 }
 
-function setVariables(){
-	randomLetter = String.fromCharCode(97 + Math.floor(Math.random() * 26));
-	keyPress = "";
-	guessesLeft = 3;
-	roundOver = false;
-	document.getElementById("randomLetter").innerHTML = "The random letter is " + randomLetter;
-	document.getElementById("guessesSoFar").innerHTML = "Your guesses so far:";
-	document.getElementById("guessesLeft").innerHTML = "Guesses Left: " + guessesLeft;	
+function getWinsCount(){
+	wins.innerHTML = "Wins: " + winsCount; 
+}
+function getLossesCount(){
+	losses.innerHTML = "Losses: " + lossesCount;
+}
+function getGuessesSoFar(){
+	guessesSoFar.innerHTML = "Letters so far: " + arr;
+}
+function getGuessesCount(){
+	guessesLeft.innerHTML = "Guesses Left: " + guessesCount;
 }	
 
 document.onkeyup=function(event){
-	document.getElementById("message").innerHTML = "reset.";
-	console.log("Round: " + roundCount);
-	if(!roundOver && roundCount < 6){
     keyPress = event.key;
-    console.log(keyPress);
-    checkGuess(keyPress);
-     }
-     else{
-     	document.getElementById("message").innerHTML = "Game Over!! Press another key to restart game.";
-     	setVariables();
-		resetVariables();
-		return;
-     }	
+    keyCode = event.keyCode;
+    if(validateKeys(keyCode)){
+    	arr.push(keyPress);
+    	getGuessesSoFar();
+	    	if(checkWinsLosses(keyPress)){
+		    	getWinsCount();
+		    	setVariables();
+	    	}else{
+		    	guessesCount--;
+		    	getGuessesCount();
+		    	checkGuesses(guessesCount);
+	    	} 	
+    } else{
+    	setVariables();
+    }  
 }
-
-function checkGuess(keyPress){	
-	if(guessesLeft > 0){
-		if(randomLetter === keyPress){			
-			wins++;
-			document.getElementById("wins").innerHTML = "Wins: " + wins;
-			document.getElementById("message").innerHTML = "You won this round. Press another key to continue.";
-			roundOver = true;
-			roundCount++;
-			document.getElementById("roundCount").innerHTML = "Round Count: " + roundCount;
+function checkGuesses(count){
+		if(count === 0){
+			lossesCount++;
+			getLossesCount();
+			getGuessesCount();
 			setVariables();
 		}
-	}
-	else if(guessesLeft == 0){
-		losses++;
-		document.getElementById("losses").innerHTML = "Losses: " + losses;
-		document.getElementById("message").innerHTML = "You lost this round. Press another key to continue.";
-		roundCount++;
-		document.getElementById("roundCount").innerHTML = "Round Count: " + roundCount;
-		roundOver = true;
-		setVariables();
-	}	
-	document.getElementById("guessesSoFar").innerHTML += " " + keyPress;
-	guessesLeft--;
-    document.getElementById("guessesLeft").innerHTML = "Guesses Left: " + guessesLeft;
 }
 
-
-
-
+function checkWinsLosses(keyPress){
+	if(letter === keyPress){			
+		winsCount++;
+		return true;
+	}else{
+		return false;
+	}
+}
+function validateKeys(keyCode){
+	if(keyCode > 64 && keyCode < 91){
+		return true;
+    } else{
+    	return false;
+    }
+}
